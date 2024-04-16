@@ -7,6 +7,9 @@ import pandas as pd
 
 app = dash.Dash(__name__)
 
+# Declare server for Heroku deployment. Needed for Procfile.
+server = app.server
+
 # Define custom styles
 app.layout = html.Div(style={'backgroundColor': '#f5f5f5', 'padding': '20px'}, children=[
     html.Div(className='card', children=[
