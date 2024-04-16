@@ -51,15 +51,12 @@ def parse_contents(contents, filename):
     decoded = base64.b64decode(content_string)
     try:
         if 'xls' in filename:
-            print("Processing xls")
             df = pd.read_excel(BytesIO(decoded))
-            print(df.head())
         elif 'csv' in filename:
             df = pd.read_csv(BytesIO(decoded))
         else:
             return html.Div('Unsupported file type')
     except Exception as e:
-        print(e)
         return html.Div([
             'There was an error processing this file.'
         ])
@@ -85,15 +82,8 @@ def update_output(n_clicks, contents, filename):
         processed_data = parse_contents(contents, filename)
 
         if isinstance(processed_data, pd.DataFrame):
-            # Check if the column exists in the DataFrame
-            if 'groupid_pickup' not in processed_data.columns or 'groupid_delivery' not in processed_data.columns or 'tags' not in processed_data.columns:
-                print("columns do not exists")
-                return "Error: One or more required columns missing", None, None, None
-
-            # Add a derived column to the data
             processed_data['groupid'] = processed_data['groupid_pickup'] + processed_data['groupid_delivery'] + processed_data['tags']
 
-            # Save the Excel file on the server
             path = save_excel(processed_data)
 
             file_info = f"File name: {filename}, Columns: {len(processed_data.columns)}, Rows: {len(processed_data)}"
@@ -105,7 +95,6 @@ def update_output(n_clicks, contents, filename):
                 style_cell={'textAlign': 'left'},
             ), f"/download/{path}", file_info
         else:
-            print("exception with df")
             return html.Div(processed_data)
 
     return None, None, "", None
@@ -113,3 +102,4 @@ def update_output(n_clicks, contents, filename):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
